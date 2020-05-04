@@ -10,19 +10,30 @@ import Model.Pais;
 public class DAO {
 	Pais pais = new Pais();
 	//Inserir
-	public void criar(Pais pais) {
-		String sqlInsert = "INSERT INTO pais (id,nome,populacao,area) VALUES (0, ?, ?, ?)";
+	public int create(Pais pais) {
+		String sqlInsert = "INSERT INTO pais (nome,populacao,area) VALUES (?, ?, ?)";
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlInsert);) {
 			stm.setString(1, pais.getNome());
 			stm.setLong(2, pais.getPopulacao());
 			stm.setDouble(3, pais.getArea());
 			stm.execute();
+			String sqlQuery = "SELECT LAST_INSERT_ID()";
+			try (PreparedStatement stm2 = conn.prepareStatement(sqlQuery);
+					ResultSet rs = stm2.executeQuery();) {
+				if (rs.next()) {
+					pais.setId(rs.getInt(1));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return pais.getId();
 	}
 
+	//Atualizar
 	public void update(Pais pais) {
 		String sqlUpdate = "UPDATE pais SET nome=?, populacao=?, area=? WHERE id=?";
 		try (Connection conexao = ConnectionFactory.obtemConexao();

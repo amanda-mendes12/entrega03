@@ -3,6 +3,7 @@ package Controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,9 +13,9 @@ import Model.Pais;
 import Service.Service;
 
 /**
- * Servlet implementation class PaisController
+ * Servlet implementation class ManterClienteController
  */
-@WebServlet("/PaisController.do")
+@WebServlet("/Pais.do")
 public class PaisController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -33,24 +34,24 @@ public class PaisController extends HttpServlet {
 		Long pPpopulacao = Long.parseLong(request.getParameter("populacao"));
 		Double pArea = Double.parseDouble(request.getParameter("area"));
 		
-
+		//instanciar o javabean
 		Pais pais = new Pais();
-		pais.setId(0);
 		pais.setNome(pNome);
 		pais.setPopulacao(pPpopulacao);
 		pais.setArea(pArea);
 		
+		//instanciar o service
 		Service ps = new Service();
-		ps.criar(pais);
+		ps.create(pais);
 		pais = ps.select(pais);
 		
-		PrintWriter out = response.getWriter();
-		out.println("<html><head><title>Pais Cadastrado</title></head><body>");
-		out.println(	"id: "+pais.getId()+"<br>");
-		out.println(	"nome: "+pais.getNome()+"<br>");
-		out.println(	"populacao: "+pais.getPopulacao()+"<br>");
-		out.println(	"area: "+pais.getArea()+"<br>");
-	    out.println("</body></html>");
+		//enviar o Objeto Pais para JSP
+		request.setAttribute("pais", pais);
+		
+		RequestDispatcher view = 
+				request.getRequestDispatcher("Pais.jsp");
+		view.forward(request, response);
+		
 		
 	}
 
